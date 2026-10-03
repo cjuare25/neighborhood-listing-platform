@@ -1,0 +1,14 @@
+{
+  "id": 101,
+  "address": "1450 Sunset Avenue",
+  "city": "Los Angeles",
+  "price": "425000",
+  "bedrooms": 3,
+  "bathrooms": 2,
+  "imageUrl": "https://example.com/listing-101.jpg",
+  "contact": {
+    "email": "agent@example.com",
+    "phone": "+13235550123"
+  },
+  "listedAt": "2026-09-15T17:30:00Z"
+}

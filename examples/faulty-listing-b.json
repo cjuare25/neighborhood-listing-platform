@@ -1,0 +1,18 @@
+{
+  "id": 102,
+  "address": "900 Grand Avenue",
+  "city": "Los Angeles",
+  "price": -250000,
+  "bedrooms": -2,
+  "bathrooms": 1,
+  "imageUrl": "https://example.com/listing-102.jpg",
+  "amenities": [
+    "Parking",
+    "Balcony"
+  ],
+  "contact": {
+    "email": "not-an-email",
+    "phone": "123"
+  },
+  "listedAt": "2099-12-31T17:30:00Z"
+}
