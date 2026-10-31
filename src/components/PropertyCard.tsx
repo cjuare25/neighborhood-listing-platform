@@ -31,8 +31,10 @@ export default function PropertyCard({ property }: PropertyCardProps) {
         <Image
           src={property.imageUrl}
           alt={`${property.address} property in ${property.city}`}
-          width={800}
-          height={600}
+          width={1280}
+          height={853}
+          sizes="(min-width: 1024px) 410px, (min-width: 768px) 40vw, calc(100vw - 3rem)"
+          priority
           className="h-56 w-full object-cover md:h-full"
         />
 
