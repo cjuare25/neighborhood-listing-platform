@@ -28,3 +28,29 @@ database authorization tests are still pending.
 Related database implementation commit: 2e19513.
 Validation implementation commit: see Git history for
 "feat: validate property submission payloads".
+
+## Server API and Security Audit Verification
+
+ChatGPT supplied the server client, property API handlers, and repeatable
+security audit script. The student executed and reviewed the checks.
+
+Verified:
+- Lint and production build passed.
+- All 21 unit tests passed.
+- Production dependency audit reported zero vulnerabilities.
+- Public GET returned HTTP 200.
+- Extra-field and malformed-JSON submissions returned HTTP 400.
+- Unauthenticated valid submission returned HTTP 401.
+- All 15 database/API authorization checks passed.
+- Authenticated POST returned HTTP 201 with an owner-linked draft.
+- Temporary audit records and accounts were cleaned up.
+
+Evidence:
+- scripts/exam-security-audit.mjs
+- docs/security-audit.md
+
+The npm suggestion to use audit fix --force was not followed because
+it proposed a breaking ESLint downgrade. Sixteen moderate
+development-tool dependency findings remain documented.
+
+Exact-prompt records and final commit references still need completion.
