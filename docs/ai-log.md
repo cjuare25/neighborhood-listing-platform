@@ -11,3 +11,20 @@ Record only verification that was actually performed.
 ## Exact Prompts and Output Notes
 
 Add the exact prompts used for implementation, accepted output, rejected output where applicable, and independent verification results.
+
+## Property Validation Verification
+
+ChatGPT supplied src/schemas/property.ts and its Vitest tests.
+Accepted implementation: strict validation of required listing fields,
+rejection of extra fields, and database-compatible numeric limits.
+
+Independent verification:
+npm test -- src/schemas/property.test.ts
+Result: 17 tests passed.
+
+These tests verify the validation contract only. API persistence and
+database authorization tests are still pending.
+
+Related database implementation commit: 2e19513.
+Validation implementation commit: see Git history for
+"feat: validate property submission payloads".
