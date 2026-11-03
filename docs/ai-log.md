@@ -1,90 +1,54 @@
 # Midterm AI Provenance Journal
 
-Record exact prompts and relevant outputs below as work progresses.
-Replace pending commit references with actual hashes after committing.
-Record only verification that was actually performed.
+The student completed the examination independently.
+AI assistance supported implementation and review. The student executed
+the recorded commands and browser checks.
+
+Model versions were not recorded. Historical progress notes are retained
+in ai-log-checkpoints.md.
 
 | Step / Tool | Prompt Summary | Model Output Used | Model Output Rejected & Rationale | Verification Method | Associated Git Commit |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| Environment setup / ChatGPT | Guided exam branch setup, ignore checks, and dependency installation. | Terminal commands for setup and inspection. | None recorded for this step. | Terminal showed the exam branch, six ignored paths, no tracked environment files from the filename check, and successful npm ci. | Pending |
+| Setup and requirements / ChatGPT | Supplied examination instructions and terminal context. | Branch setup, ignore rules, three user stories and acceptance criteria. | No rejected output recorded for this step. | Branch/status checks and environment filename ignore checks. | 419bcc5 |
+| Database / ChatGPT | Implement examination tables and security while preserving earlier lab data. | UUID schema, private legacy archive, grants, and RLS policies. | No rejected output recorded for this step. | Migration applied; histories matched; five tables had RLS enabled; archived property count was one. | 2e19513 |
+| Validation / ChatGPT | Implement the examination property contract. | Strict Zod schema and validation tests. | Client-controlled ownership and approval fields are rejected by the contract. | All 17 property validation tests passed. | e7160b0 |
+| API and authorization / ChatGPT | Implement server-isolated clients, routes, and authorization verification. | Property GET/POST handlers and repeatable security audit. | npm audit fix --force was not used because it proposed a breaking ESLint downgrade. | Lint, build, 21 unit tests, 15 authorization checks, and fixture cleanup passed. | 7781e8d |
+| UI and inquiries / ChatGPT | Implement live cards, responsive layout, and private inquiry submission. | Semantic cards, live grid, inquiry validator/endpoint, and demonstration seed script. | No rejected output recorded for this step. | Lint/build and recorded browser screenshots; see ui-verification.md for pending checks. | 50e6683 |
+| Credential history / ChatGPT | Guide a credential-history scan. | Official Gitleaks download, checksum verification, and redacted scan commands. | Homebrew installation path was replaced because Homebrew was unavailable. | Gitleaks 8.30.1 scanned 11 commits and reported no leaks. | d6b640c |
+| Merge resolution / ChatGPT | Reconcile examination work with updated main. | Preserved tested examination UI and original migration; retained compatible image work. | Replacing the examination UI with the older sample UI was not adopted. | Lint, 21 tests, build, and four matching migration histories. | 53286ae |
+| Deployment / ChatGPT | Configure and verify hosted examination application. | Vercel project linking, hosted connection settings, and deployment commands. | Initial Preview deployment command failed because Vercel requires the first deployment to use Production. | Deployment Ready; hosted GET 200 with three listings; unauthenticated POST 401. | 53286ae (deployed source) |
+| SQL review / Gemini | Review migration for draft disclosure, ownership violations, self-approval, inquiry disclosure, and role escalation. | Policy interpretations supporting the existing implementation. | Blanket security assurance, trigger implication, and optional inquiry-policy change were not adopted; see gemini-security-review.md. | Compared static review against source and previously executed audit. No new SQL execution claimed. | 2e19513 (reviewed implementation) |
+| Access attempt / Google AI Studio | Attempt to obtain the prepared accessibility review. | No output generated or used. | Access required age verification, which was not completed because of time constraints. | Student observed the age-verification requirement. | N/A — access attempt only |
 
-## Exact Prompts and Output Notes
+## Exact Prompt Records
 
-Add the exact prompts used for implementation, accepted output, rejected output where applicable, and independent verification results.
+- Gemini: prompts/gemini-security-review.txt contains the prepared review
+  prompt and supplied migration source.
+- Google AI Studio: prompts/ai-studio-accessibility-review.txt contains the
+  prepared prompt and source. This review was not executed.
+- ChatGPT: the initial request supplied the examination assignment and
+  its attached handout, Pasted markdown.md. Subsequent messages supplied
+  terminal outputs, screenshots, and troubleshooting questions.
+  The full follow-up conversation has not been transcribed into this repository.
 
-## Property Validation Verification
+## Accepted Outputs and Independent Verification
 
-ChatGPT supplied src/schemas/property.ts and its Vitest tests.
-Accepted implementation: strict validation of required listing fields,
-rejection of extra fields, and database-compatible numeric limits.
+Implementation files can be inspected at the associated commits.
+Evidence is recorded in:
+- security-audit.md
+- ui-verification.md
+- credential-verification.md
+- deployment-verification.md
+- gemini-security-review.md
 
-Independent verification:
-npm test -- src/schemas/property.test.ts
-Result: 17 tests passed.
+AI-generated tests and scripts were executed by the student. Gemini's
+review is static analysis and is not counted as an executed test.
 
-These tests verify the validation contract only. API persistence and
-database authorization tests are still pending.
+## Remaining Limitations
 
-Related database implementation commit: 2e19513.
-Validation implementation commit: see Git history for
-"feat: validate property submission payloads".
-
-## Server API and Security Audit Verification
-
-ChatGPT supplied the server client, property API handlers, and repeatable
-security audit script. The student executed and reviewed the checks.
-
-Verified:
-- Lint and production build passed.
-- All 21 unit tests passed.
-- Production dependency audit reported zero vulnerabilities.
-- Public GET returned HTTP 200.
-- Extra-field and malformed-JSON submissions returned HTTP 400.
-- Unauthenticated valid submission returned HTTP 401.
-- All 15 database/API authorization checks passed.
-- Authenticated POST returned HTTP 201 with an owner-linked draft.
-- Temporary audit records and accounts were cleaned up.
-
-Evidence:
-- scripts/exam-security-audit.mjs
-- docs/security-audit.md
-
-The npm suggestion to use audit fix --force was not followed because
-it proposed a breaking ESLint downgrade. Sixteen moderate
-development-tool dependency findings remain documented.
-
-Exact-prompt records and final commit references still need completion.
-
-## Accessible Listing UI and Inquiry Form
-
-ChatGPT supplied the live property grid, semantic property cards,
-inquiry validation and endpoint, and demonstration-data script.
-
-Accepted output:
-- Semantic article, header, heading, and specification list.
-- Responsive one/two/three-column Tailwind grid.
-- Labeled inquiry controls and visible focus styles.
-- Anonymous inquiry insertion without returning inquiry records.
-
-Verification:
-- ESLint and production build passed.
-- Student screenshots confirmed desktop cards, an expanded form,
-  visible button focus, empty-form validation, and successful submission.
-- See docs/ui-verification.md for confirmed and pending manual checks.
-
-Associated implementation: see commit
-"feat: add accessible property grid and private inquiry form".
-
-## Credential History Verification
-
-ChatGPT supplied commands to download the official Gitleaks release,
-verify its published checksum, and scan Git history.
-
-Student verification:
-- Download checksum matched.
-- Gitleaks version: 8.30.1.
-- Repository shallow-history check returned false.
-- Scan across all available Git references examined 11 commits.
-- Result: no leaks found.
-
-Evidence: docs/credential-verification.md
+- Google AI Studio usage was not completed because age verification was required.
+- Full exact ChatGPT follow-up prompt transcripts have not been archived.
+- Responsive and complete keyboard checks remain unconfirmed.
+- Hosted inquiry-form submission remains unconfirmed.
+- Sixteen moderate development-tool dependency findings remain documented;
+  the production dependency audit reported zero vulnerabilities.
