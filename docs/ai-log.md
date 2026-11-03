@@ -54,3 +54,23 @@ it proposed a breaking ESLint downgrade. Sixteen moderate
 development-tool dependency findings remain documented.
 
 Exact-prompt records and final commit references still need completion.
+
+## Accessible Listing UI and Inquiry Form
+
+ChatGPT supplied the live property grid, semantic property cards,
+inquiry validation and endpoint, and demonstration-data script.
+
+Accepted output:
+- Semantic article, header, heading, and specification list.
+- Responsive one/two/three-column Tailwind grid.
+- Labeled inquiry controls and visible focus styles.
+- Anonymous inquiry insertion without returning inquiry records.
+
+Verification:
+- ESLint and production build passed.
+- Student screenshots confirmed desktop cards, an expanded form,
+  visible button focus, empty-form validation, and successful submission.
+- See docs/ui-verification.md for confirmed and pending manual checks.
+
+Associated implementation: see commit
+"feat: add accessible property grid and private inquiry form".
