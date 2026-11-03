@@ -74,3 +74,17 @@ Verification:
 
 Associated implementation: see commit
 "feat: add accessible property grid and private inquiry form".
+
+## Credential History Verification
+
+ChatGPT supplied commands to download the official Gitleaks release,
+verify its published checksum, and scan Git history.
+
+Student verification:
+- Download checksum matched.
+- Gitleaks version: 8.30.1.
+- Repository shallow-history check returned false.
+- Scan across all available Git references examined 11 commits.
+- Result: no leaks found.
+
+Evidence: docs/credential-verification.md
