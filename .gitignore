@@ -39,3 +39,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Midterm examination exclusions
+node_modules/
+.env
+.env*.local
+dist/
+.next/
