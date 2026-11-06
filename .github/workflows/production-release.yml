@@ -1,0 +1,148 @@
+name: Production Release Gates
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  application-quality:
+    name: Application Quality Gates
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Check production dependency security
+        run: npm audit --omit=dev
+
+      - name: Gate 1 - Production build
+        run: npm run build
+
+      - name: Gate 2 - Automated unit tests
+        run: npm test
+
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Gate 5 - Accessibility
+        run: npm run test:a11y
+
+      - name: Gate 6 - Core user flow
+        run: npm run test:e2e
+
+  database-security:
+    name: Database and Security Gates
+    runs-on: ubuntu-latest
+
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+      SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Link Supabase project
+        run: >
+          npx supabase link
+          --project-ref "$SUPABASE_PROJECT_ID"
+          --password "$SUPABASE_DB_PASSWORD"
+
+      - name: Gate 3 - Data migration integrity
+        run: npm run check:migrations
+
+      - name: Gate 4 - Row-Level Security enforcement
+        run: npm run test:rls
+
+  production-deployment:
+    name: Production Deployment Gates
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs:
+      - application-quality
+      - database-security
+    runs-on: ubuntu-latest
+
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Pull Vercel production configuration
+        run: >
+          npx --yes vercel@65.12.1 pull
+          --yes
+          --environment=production
+          --token="$VERCEL_TOKEN"
+
+      - name: Build Vercel production artifact
+        run: >
+          npx --yes vercel@65.12.1 build
+          --prod
+          --token="$VERCEL_TOKEN"
+
+      - name: Deploy production artifact
+        id: deploy
+        run: |
+          deployment_url="$(
+            npx --yes vercel@65.12.1 deploy \
+              --prebuilt \
+              --prod \
+              --token="$VERCEL_TOKEN"
+          )"
+          echo "deployment_url=$deployment_url" >> "$GITHUB_OUTPUT"
+
+      - name: Gate 7 - Deployment smoke test
+        id: smoke
+        env:
+          DEPLOYMENT_URL: ${{ steps.deploy.outputs.deployment_url }}
+        run: npm run test:smoke -- "$DEPLOYMENT_URL"
+
+      - name: Gate 8 - Roll back failed production release
+        if: failure() && steps.smoke.outcome == 'failure'
+        run: npm run rollback:production
