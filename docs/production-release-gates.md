@@ -382,7 +382,7 @@ Post-deployment GitHub Actions step:
 - name: Gate 7 - Deployment smoke test
   id: smoke
   env:
-    DEPLOYMENT_URL: ${{ steps.deploy.outputs.deployment_url }}
+    DEPLOYMENT_URL: https://neighborhood-listing-platform-mauve.vercel.app
   run: npm run test:smoke -- "$DEPLOYMENT_URL"
 ```
 
@@ -410,6 +410,11 @@ SMOKE_TEST_PASSED: http://localhost:3000 returned HTTP 200 for /api/health and /
 ```
 
 ### Blocking Failure Evidence
+A deployment-specific URL protected by Vercel Authentication produced:
+
+```text
+SMOKE_TEST_FAILED: health endpoint returned HTTP 401; expected HTTP 200.
+```
 
 An unreachable deployment produced:
 
@@ -450,12 +455,10 @@ The rollback script executes:
 ```bash
 npx --yes vercel@65.12.1 rollback \
   --token "$VERCEL_TOKEN" \
-  --scope "$VERCEL_ORG_ID" \
   --no-color
 
 npx --yes vercel@65.12.1 rollback status \
   --token "$VERCEL_TOKEN" \
-  --scope "$VERCEL_ORG_ID" \
   --no-color
 ```
 
