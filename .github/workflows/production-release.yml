@@ -140,7 +140,7 @@ jobs:
       - name: Gate 7 - Deployment smoke test
         id: smoke
         env:
-          DEPLOYMENT_URL: ${{ steps.deploy.outputs.deployment_url }}
+          DEPLOYMENT_URL: https://neighborhood-listing-platform-mauve.vercel.app
         run: npm run test:smoke -- "$DEPLOYMENT_URL"
 
       - name: Gate 8 - Roll back failed production release

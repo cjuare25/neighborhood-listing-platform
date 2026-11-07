@@ -26,12 +26,10 @@ echo "ROLLBACK_STARTED: restoring the previous production deployment."
 
 npx --yes vercel@65.12.1 rollback \
   --token "$VERCEL_TOKEN" \
-  --scope "$VERCEL_ORG_ID" \
   --no-color
 
 npx --yes vercel@65.12.1 rollback status \
   --token "$VERCEL_TOKEN" \
-  --scope "$VERCEL_ORG_ID" \
   --no-color
 
 echo "ROLLBACK_COMPLETED: Vercel reported the rollback status successfully."
