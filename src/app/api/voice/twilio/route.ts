@@ -50,6 +50,10 @@ export async function POST(request: Request) {
   const signature = request.headers.get("x-twilio-signature") ?? "";
 
   if (!signature) {
+    console.info(JSON.stringify({
+      event: "twilio.voice.rejected",
+      reason: "missing_signature",
+    }));
     return textResponse("Forbidden", 403);
   }
 
@@ -106,6 +110,15 @@ export async function POST(request: Request) {
   }
 
   if (!validSignature) {
+    console.info(JSON.stringify({
+      event: "twilio.voice.rejected",
+      reason: "invalid_signature",
+      request_url_matches: request.url === webhookUrl,
+      has_account_sid: Boolean(params.AccountSid),
+      has_signature_settings: request.headers.has(
+        "x-twilio-webhooks-signature-settings"
+      ),
+    }));
     return textResponse("Forbidden", 403);
   }
 
