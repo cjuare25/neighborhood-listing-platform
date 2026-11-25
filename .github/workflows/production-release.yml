@@ -82,7 +82,33 @@ jobs:
           --password "$SUPABASE_DB_PASSWORD"
 
       - name: Gate 3 - Data migration integrity
-        run: npm run check:migrations
+        run: |
+          node <<'NODE'
+          const { spawnSync } = require("node:child_process");
+          const project = process.env.SUPABASE_PROJECT_ID;
+          const password = process.env.SUPABASE_DB_PASSWORD;
+          if (!project || !password) {
+            console.error("Required database secrets are missing.");
+            process.exit(1);
+          }
+          const url = new URL(
+            "postgresql://aws-1-us-west-2.pooler.supabase.com:5432/postgres"
+          );
+          url.username = `postgres.${project}`;
+          url.password = password;
+          url.searchParams.set("sslmode", "require");
+          console.log(`::add-mask::${url.password}`);
+          console.log(`::add-mask::${url.href}`);
+          const result = spawnSync(
+            "npm",
+            ["run", "check:migrations", "--", "--db-url", url.href],
+            { stdio: "inherit" }
+          );
+          if (result.error) {
+            console.error("Could not start the migration dry run.");
+          }
+          process.exit(result.status ?? 1);
+          NODE
 
       - name: Gate 4 - Row-Level Security enforcement
         run: npm run test:rls
