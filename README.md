@@ -57,8 +57,9 @@ The updated page was inspected locally at http://localhost:3001.
 Existing project deployment:
 https://neighborhood-listing-platform-mauve.vercel.app
 
-Verification that this URL serves the updated app shell is pending
-deployment and inspection in a private browser window.
+The updated app shell was verified at this URL in Chrome Incognito
+on November 25, 2026. Production Release Gates passed for merge
+commit 7454382 (PR #9).
 
 ## AI collaboration
 

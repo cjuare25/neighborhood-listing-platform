@@ -58,8 +58,14 @@ Clearly label any proposed voice functionality that is not connected.
 - The latest console screenshot shows no red error entries and includes
   a yellow LMS adapter warning whose source has not been established.
 - The user reported that clicks work.
-- Keyboard skip-link verification remains to be recorded.
-- Hosted app-shell verification remains pending.
+- Keyboard focus makes the skip link visible with a focus outline,
+  confirmed by the local-page screenshot.
+- Hosted app shell verified in Chrome Incognito on November 25, 2026.
+- Production Release Gates passed for merge commit 7454382 (PR #9).
+- CI troubleshooting: replaced an invalid Supabase access token,
+  configured an IPv4 session-pooler migration dry run in c31a40c,
+  and restored the original applied migration in 75fb18b.
+- No migration-history repair was performed.
 - Voice help is not connected to this webpage; the separate Vapi
   assistant is not represented as an active webpage integration.
 - No credentials or private environment values are included in this log.
