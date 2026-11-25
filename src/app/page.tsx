@@ -25,7 +25,7 @@ const featuredSponsor = {
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-slate-100 px-6 py-12">
+    <main id="main-content" tabIndex={-1} className="min-h-screen bg-slate-100 px-6 py-12">
       <div className="mx-auto max-w-5xl">
         <header className="mb-8">
           <h1 className="text-4xl font-bold text-slate-900">
@@ -54,6 +54,53 @@ export default function Home() {
             </a>
           </nav>
         </header>
+
+
+        <ul
+          aria-label="Platform features"
+          className="mb-10 grid list-none gap-5 p-0 md:grid-cols-3"
+        >
+          <li className="rounded-xl border border-slate-300 bg-white p-6">
+            <h2 className="text-xl font-semibold text-slate-900">
+              Listings
+            </h2>
+            <p className="mt-3 text-slate-700">
+              Explore featured homes and save properties to your favorites.
+            </p>
+            <a
+              href="#featured-properties-heading"
+              className="mt-4 inline-block font-semibold text-blue-700 underline focus-visible:outline-2 focus-visible:outline-offset-4"
+            >
+              Explore listings
+            </a>
+          </li>
+          <li className="rounded-xl border border-slate-300 bg-white p-6">
+            <h2 className="text-xl font-semibold text-slate-900">
+              Neighborhood sponsors
+            </h2>
+            <p className="mt-3 text-slate-700">
+              Discover local businesses featured as neighborhood partners.
+            </p>
+            <a
+              href="#neighborhood-partner-heading"
+              className="mt-4 inline-block font-semibold text-blue-700 underline focus-visible:outline-2 focus-visible:outline-offset-4"
+            >
+              Explore neighborhood sponsors
+            </a>
+          </li>
+          <li className="rounded-xl border border-slate-300 bg-white p-6">
+            <h2 className="text-xl font-semibold text-slate-900">
+              Voice help
+            </h2>
+            <p className="mt-3 text-slate-700">
+              Planned webpage integration for spoken property questions
+              and leasing assistance.
+            </p>
+            <p className="mt-4 font-semibold text-slate-800">
+              Voice help is not connected to this webpage.
+            </p>
+          </li>
+        </ul>
 
         <section aria-labelledby="featured-properties-heading">
           <h2
