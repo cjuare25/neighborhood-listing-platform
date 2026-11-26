@@ -51,7 +51,8 @@ export default function SearchFilters({
     const minBedrooms = typeof bedrooms === "string" ? Number(bedrooms) : NaN;
 
     if (
-      bedrooms === "" ||
+      typeof bedrooms !== "string" ||
+      bedrooms.trim() === "" ||
       !Number.isFinite(minBedrooms) ||
       !Number.isInteger(minBedrooms) ||
       !bedroomOptions.includes(minBedrooms)
@@ -95,6 +96,9 @@ export default function SearchFilters({
               id={cityId}
               name="city"
               defaultValue={initialCity}
+              onChange={() => {
+                if (error?.field === "city") setError(null);
+              }}
               aria-invalid={error?.field === "city" || undefined}
               aria-describedby={error?.field === "city" ? errorId : undefined}
               className={controlClass}
@@ -117,6 +121,9 @@ export default function SearchFilters({
               id={bedroomsId}
               name="minBedrooms"
               defaultValue={initialBedrooms}
+              onChange={() => {
+                if (error?.field === "minBedrooms") setError(null);
+              }}
               aria-invalid={error?.field === "minBedrooms" || undefined}
               aria-describedby={
                 error?.field === "minBedrooms" ? errorId : undefined

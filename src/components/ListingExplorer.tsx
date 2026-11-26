@@ -46,6 +46,12 @@ export default function ListingExplorer({
       <p role="status" className="mb-4 font-medium text-slate-900">
         {matchingProperties.length}{" "}
         {matchingProperties.length === 1 ? "property" : "properties"} found.
+        {" "}City: {filters.city || "All cities"}.
+        {" "}Minimum bedrooms: {filters.minBedrooms === 0
+          ? "Any bedroom count"
+          : `${filters.minBedrooms}+`}.
+        {matchingProperties.length === 0 &&
+          " Try another city or a lower minimum bedroom count."}
       </p>
 
       {matchingProperties.length > 0 ? (
