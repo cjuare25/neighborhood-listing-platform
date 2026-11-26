@@ -70,3 +70,19 @@ comparison, accepted and unused suggestions, and verification evidence.
 
 Environment files, node_modules, .next, out, build, and .vercel are
 excluded through .gitignore. Never commit credentials or private data.
+
+## Lab 2 component hierarchy
+
+```mermaid
+flowchart TD
+  Page["Page — server"] --> Explorer["ListingExplorer — client"]
+  Page --> Sponsor["SponsorBanner"]
+  Explorer --> Filters["SearchFilters — client"]
+  Explorer --> Grid["Listing grid"]
+  Grid --> Card["PropertyCard — client"]
+```
+
+The page supplies demonstration data. ListingExplorer owns the submitted
+filters and renders matching properties using stable property IDs.
+SearchFilters validates selections before calling its parent's callback.
+SponsorBanner preserves sponsor approval and destination URL validation.
