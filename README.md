@@ -86,3 +86,9 @@ The page supplies demonstration data. ListingExplorer owns the submitted
 filters and renders matching properties using stable property IDs.
 SearchFilters validates selections before calling its parent's callback.
 SponsorBanner preserves sponsor approval and destination URL validation.
+
+## Lab 2 verification evidence
+
+See [verification results](docs/lab2-verification.md) and the
+[AI collaboration log](docs/ai-log.md) for testing, review decisions,
+and limitations. Classmate review is required before merging the lab PR.
