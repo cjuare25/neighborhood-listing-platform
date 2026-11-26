@@ -32,6 +32,8 @@ export interface Sponsor {
 
 export interface PropertyCardProps {
   property: Property;
+  isFavorite: boolean;
+  onToggleFavorite: () => void;
 }
 
 export interface SponsorBannerProps {

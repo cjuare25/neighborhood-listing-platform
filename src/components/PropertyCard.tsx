@@ -2,12 +2,14 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
 
 import type { PropertyCardProps } from "@/types";
 
-export default function PropertyCard({ property }: PropertyCardProps) {
-  const [isFavorite, setIsFavorite] = useState(false);
+export default function PropertyCard({
+  property,
+  isFavorite,
+  onToggleFavorite,
+}: PropertyCardProps) {
   const headingId = `property-title-${property.id}`;
 
   return (
@@ -27,7 +29,7 @@ export default function PropertyCard({ property }: PropertyCardProps) {
 
         <button
           type="button"
-          onClick={() => setIsFavorite((current) => !current)}
+          onClick={onToggleFavorite}
           aria-pressed={isFavorite}
           aria-label={`${isFavorite ? "Remove" : "Add"} ${property.address} ${
             isFavorite ? "from" : "to"

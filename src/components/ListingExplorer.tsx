@@ -17,6 +17,16 @@ export default function ListingExplorer({
     minBedrooms: 0,
   });
 
+  const [favoriteIds, setFavoriteIds] = useState<number[]>([]);
+
+  function toggleFavorite(id: number) {
+    setFavoriteIds((current) =>
+      current.includes(id)
+        ? current.filter((favoriteId) => favoriteId !== id)
+        : [...current, id],
+    );
+  }
+
   const cities = [...new Set(properties.map((property) => property.city))].sort();
 
   const matchingProperties = properties.filter(
@@ -45,7 +55,11 @@ export default function ListingExplorer({
         >
           {matchingProperties.map((property) => (
             <li key={property.id} className="min-w-0">
-              <PropertyCard property={property} />
+              <PropertyCard
+                property={property}
+                isFavorite={favoriteIds.includes(property.id)}
+                onToggleFavorite={() => toggleFavorite(property.id)}
+              />
             </li>
           ))}
         </ul>
