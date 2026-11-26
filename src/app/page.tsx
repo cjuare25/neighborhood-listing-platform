@@ -1,7 +1,7 @@
 import Image from "next/image";
 
 import PropertyCard from "@/components/PropertyCard";
-import SponsorCard from "@/components/SponsorCard";
+import SponsorBanner from "@/components/SponsorBanner";
 
 const featuredProperty = {
   id: 1,
@@ -21,6 +21,7 @@ const featuredSponsor = {
   tier: "GOLD" as const,
   destinationUrl: "https://example.com/down-to-earth-coffee",
   bannerUrl: "/assets/business-partner.jpg",
+  bannerAlt: "Down to Earth Coffee storefront with large windows and outdoor seating.",
   status: "APPROVED" as const,
 };
 
@@ -125,7 +126,7 @@ export default function Home() {
             Neighborhood partner
           </h2>
 
-          <SponsorCard sponsor={featuredSponsor} />
+          <SponsorBanner sponsor={featuredSponsor} />
         </section>
       </div>
     </main>
