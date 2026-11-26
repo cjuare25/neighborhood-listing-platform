@@ -1,19 +1,8 @@
 import Image from "next/image";
 
-import PropertyCard from "@/components/PropertyCard";
+import ListingExplorer from "@/components/ListingExplorer";
+import { sampleProperties } from "@/data/properties";
 import SponsorBanner from "@/components/SponsorBanner";
-
-const featuredProperty = {
-  id: 1,
-  address: "125 Maple Street",
-  city: "Los Angeles, CA",
-  price: "$725,000",
-  bedrooms: 3,
-  bathrooms: 2,
-  imageUrl: "/assets/property-listing.jpg",
-  imageAlt: "Exterior of a single-story house with an orange tile roof.",
-  availabilityStatus: "ACTIVE" as const,
-};
 
 const featuredSponsor = {
   id: 1,
@@ -112,7 +101,7 @@ export default function Home() {
             Featured properties
           </h2>
 
-          <PropertyCard property={featuredProperty} />
+          <ListingExplorer properties={sampleProperties} />
         </section>
 
         <section
