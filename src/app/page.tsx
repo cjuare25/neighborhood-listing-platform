@@ -11,6 +11,7 @@ const featuredProperty = {
   bedrooms: 3,
   bathrooms: 2,
   imageUrl: "/assets/property-listing.jpg",
+  imageAlt: "Exterior of a single-story house with an orange tile roof.",
   availabilityStatus: "ACTIVE" as const,
 };
 
