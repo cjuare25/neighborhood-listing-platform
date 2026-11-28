@@ -69,3 +69,93 @@ Clearly label any proposed voice functionality that is not connected.
 - Voice help is not connected to this webpage; the separate Vapi
   assistant is not represented as an active webpage integration.
 - No credentials or private environment values are included in this log.
+
+## Lab 2 — typed accessible components
+
+### Interface prompt evidence
+
+Google AI Studio was asked for TypeScript interfaces and supporting
+type aliases only, preserving existing property and sponsor fields.
+The request required image alternative-text fields, optional detail
+URLs and phone numbers, typed filters and callbacks, and comments
+distinguishing compile-time types from runtime validation.
+
+Before revision: SearchFiltersProps lacked a parent-supplied city list;
+validation guidance did not explicitly require an integer bedroom count.
+
+Follow-up prompt:
+
+> Revise your interfaces only, preserving the existing field names.
+> Add a required cities: readonly string[] property to SearchFiltersProps.
+> The parent will derive these options from the sample property data.
+> Clarify that minBedrooms requires runtime validation as a finite,
+> nonnegative integer, and city must be empty (all cities) or one
+> of the supplied cities.
+> Preserve the distinction between compile-time types and runtime validation.
+> Keep detailUrl and agentPhone optional. Do not invent fallback values.
+> Return the revised interfaces and type aliases only.
+
+After revision: accepted the city list and validation requirements;
+condensed the explanatory comments in the implementation.
+Shared types and the hierarchy were committed in c204c19.
+
+### Component review prompts
+
+ChatGPT reviewed the supplied PropertyCard, SponsorBanner,
+SearchFilters, and ListingExplorer source using the lab's requested
+issue / why it matters / smallest change / manual test format.
+
+The independent Gemini review used this prompt:
+
+> Review these React/TypeScript components for semantic HTML,
+> WCAG-oriented keyboard access, responsive behavior, and TypeScript
+> safety. Focus especially on accessibility.
+>
+> Return a table with:
+> issue, why it matters, smallest change, and a manual test.
+>
+> Distinguish definite code findings from concerns that require
+> browser or assistive-technology testing. Do not claim compliance
+> from code alone, invent test results, or rewrite the components.
+>
+> Context:
+> - Property cards appear beneath an h2 section heading.
+> - The parent supplies three demonstration properties with unique IDs.
+> - The user confirmed keyboard navigation and responsive layouts
+>   at 375, 768, and 1280 px.
+> - A local Lighthouse Mobile accessibility audit scored 100.
+> - Form validation error paths and screen-reader announcements
+>   have not yet been tested.
+>
+> Propose only focused improvements appropriate to this component lab.
+
+Gemini initially received only the earlier types and declined to review
+missing components. The four component files and shared types were
+then supplied, and Gemini returned its critique.
+
+### Decisions
+
+| Tool | Suggestion | Decision and verification | Commit |
+| --- | --- | --- | --- |
+| ChatGPT | Lift favorite state out of individual cards | Accepted after reproducing lost favorites; manual retest and regression test passed | e7af7da, 5e18c76 |
+| ChatGPT and Gemini | Include submitted criteria in result status | Accepted; different one-result searches now show different city text; browser and regression checks passed; spoken announcements remain untested | bf73563, 5e18c76 |
+| Gemini | Reject whitespace bedroom values and clear corrected errors | Accepted; manual and automated checks verified rejection, focus, error association, and clearing | bf73563, 5e18c76 |
+| Gemini | Make favorite labels static | Not adopted; retained descriptive action labels and aria-pressed. Contradictory screen-reader behavior was not verified | Existing implementation retained |
+| Gemini | Make sponsor heading level configurable | Not adopted for this page: its h3 is already beneath an h2 section heading | Existing implementation retained |
+| Gemini | Add forced-colors outlines, a visible new-tab cue, trim optional link fields, and enlarge targets | Deferred; these suggestions were not implemented or claimed as verified | None |
+| Gemini | Change error announcement timing | Deferred pending assistive-technology testing; DOM association and focus tests do not establish speech behavior | None |
+
+### Implementation commits
+
+- c204c19: shared types and component hierarchy.
+- 9fe5071: typed PropertyCard and keyboard-operable favorite.
+- 92f1ea0: typed SponsorBanner with accurate image alternative.
+- 2eaafe1: labeled SearchFilters and validation.
+- 6325dc4: three-property responsive filtering grid.
+- e7af7da: favorites retained across filtering.
+- bf73563: clearer result status and validation corrections.
+- 5e18c76: regression tests.
+
+See [Lab 2 verification](lab2-verification.md) for actual test results,
+audit limitations, troubleshooting, and pending classmate review.
+No secrets or private environment values were supplied to either AI.

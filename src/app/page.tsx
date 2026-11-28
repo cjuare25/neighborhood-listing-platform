@@ -1,18 +1,8 @@
 import Image from "next/image";
 
-import PropertyCard from "@/components/PropertyCard";
-import SponsorCard from "@/components/SponsorCard";
-
-const featuredProperty = {
-  id: 1,
-  address: "125 Maple Street",
-  city: "Los Angeles, CA",
-  price: "$725,000",
-  bedrooms: 3,
-  bathrooms: 2,
-  imageUrl: "/assets/property-listing.jpg",
-  availabilityStatus: "ACTIVE" as const,
-};
+import ListingExplorer from "@/components/ListingExplorer";
+import { sampleProperties } from "@/data/properties";
+import SponsorBanner from "@/components/SponsorBanner";
 
 const featuredSponsor = {
   id: 1,
@@ -20,6 +10,7 @@ const featuredSponsor = {
   tier: "GOLD" as const,
   destinationUrl: "https://example.com/down-to-earth-coffee",
   bannerUrl: "/assets/business-partner.jpg",
+  bannerAlt: "Down to Earth Coffee storefront with large windows and outdoor seating.",
   status: "APPROVED" as const,
 };
 
@@ -110,7 +101,7 @@ export default function Home() {
             Featured properties
           </h2>
 
-          <PropertyCard property={featuredProperty} />
+          <ListingExplorer properties={sampleProperties} />
         </section>
 
         <section
@@ -124,7 +115,7 @@ export default function Home() {
             Neighborhood partner
           </h2>
 
-          <SponsorCard sponsor={featuredSponsor} />
+          <SponsorBanner sponsor={featuredSponsor} />
         </section>
       </div>
     </main>
