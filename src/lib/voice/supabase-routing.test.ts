@@ -7,9 +7,9 @@ import { createSupabaseListingLookup } from "./supabase-routing";
 
 const NUMBER = "+15555550100";
 const LISTING = {
-  id: 1,
+  id: "11111111-1111-4111-8111-111111111111",
   address: "125 Maple Street",
-  availability_status: "Active",
+  status: "approved",
 };
 
 function setup() {
@@ -31,7 +31,7 @@ describe("Supabase voice number lookup", () => {
   it("looks up the mapping and property using the supplied signal", async () => {
     const { query, from, lookup, signal } = setup();
     query.maybeSingle
-      .mockResolvedValueOnce({ data: { property_id: 1 }, error: null })
+      .mockResolvedValueOnce({ data: { property_id: "11111111-1111-4111-8111-111111111111" }, error: null })
       .mockResolvedValueOnce({ data: LISTING, error: null });
 
     await expect(lookup(NUMBER)).resolves.toEqual(LISTING);
@@ -41,7 +41,7 @@ describe("Supabase voice number lookup", () => {
     ]);
     expect(query.eq.mock.calls).toEqual([
       ["phone_number", NUMBER],
-      ["id", 1],
+      ["id", "11111111-1111-4111-8111-111111111111"],
     ]);
     expect(query.abortSignal.mock.calls).toEqual([[signal], [signal]]);
   });
@@ -57,7 +57,7 @@ describe("Supabase voice number lookup", () => {
   it("returns null when the mapped property is unavailable to the query", async () => {
     const { query, lookup } = setup();
     query.maybeSingle
-      .mockResolvedValueOnce({ data: { property_id: 1 }, error: null })
+      .mockResolvedValueOnce({ data: { property_id: "11111111-1111-4111-8111-111111111111" }, error: null })
       .mockResolvedValueOnce({ data: null, error: null });
 
     await expect(lookup(NUMBER)).resolves.toBeNull();
@@ -78,7 +78,7 @@ describe("Supabase voice number lookup", () => {
   it("throws when the property lookup fails", async () => {
     const { query, lookup } = setup();
     query.maybeSingle
-      .mockResolvedValueOnce({ data: { property_id: 1 }, error: null })
+      .mockResolvedValueOnce({ data: { property_id: "11111111-1111-4111-8111-111111111111" }, error: null })
       .mockResolvedValueOnce({
         data: null,
         error: { message: "Database failure" },
@@ -104,7 +104,7 @@ describe("Supabase voice number lookup", () => {
   it("rejects malformed property data", async () => {
     const { query, lookup } = setup();
     query.maybeSingle
-      .mockResolvedValueOnce({ data: { property_id: 1 }, error: null })
+      .mockResolvedValueOnce({ data: { property_id: "11111111-1111-4111-8111-111111111111" }, error: null })
       .mockResolvedValueOnce({
         data: { ...LISTING, address: "" },
         error: null,

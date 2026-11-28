@@ -70,9 +70,9 @@ beforeEach(() => {
   mocks.createClient.mockReset();
   mocks.lookupListing.mockReset();
   mocks.lookupListing.mockResolvedValue({
-    id: 1,
+    id: "11111111-1111-4111-8111-111111111111",
     address: "125 Maple Street",
-    availability_status: "Active",
+    status: "approved",
   });
   mocks.insert.mockReset();
   mocks.select.mockReset();
@@ -267,9 +267,9 @@ describe("signed webhook listing routing", () => {
 
   it("returns the general agency message for an inactive listing", async () => {
     mocks.lookupListing.mockResolvedValue({
-      id: 1,
+      id: "11111111-1111-4111-8111-111111111111",
       address: "125 Maple Street",
-      availability_status: "Sold",
+      status: "rejected",
     });
 
     const response = await POST(signedRequest());

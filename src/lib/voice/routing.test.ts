@@ -9,9 +9,9 @@ const DIALED_NUMBER = "+15555550100";
 describe("voice listing routing", () => {
   it("returns an active listing mapped to the dialed number", async () => {
     const listing = {
-      id: 1,
+      id: "11111111-1111-4111-8111-111111111111",
       address: "125 Maple Street",
-      availability_status: "Active",
+      status: "approved",
     };
     const lookup = vi.fn().mockResolvedValue(listing);
 
@@ -28,13 +28,13 @@ describe("voice listing routing", () => {
     expect(lookup).toHaveBeenCalledWith(DIALED_NUMBER);
   });
 
-  it.each(["Pending", "Sold", "Temporarily Unavailable"])(
+  it.each(["pending", "rejected", "draft"])(
     "does not route to a listing whose status is %s",
-    async (availability_status) => {
+    async (status) => {
       const lookup = vi.fn().mockResolvedValue({
-        id: 1,
+        id: "11111111-1111-4111-8111-111111111111",
         address: "125 Maple Street",
-        availability_status,
+        status,
       });
 
       await expect(

@@ -4,7 +4,7 @@
 CREATE TABLE public.voice_number_routes (
   phone_number TEXT PRIMARY KEY
     CHECK (phone_number ~ '^\+[1-9][0-9]{7,14}$'),
-  property_id BIGINT NOT NULL
+  property_id UUID NOT NULL
     REFERENCES public.properties(id) ON DELETE CASCADE,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );

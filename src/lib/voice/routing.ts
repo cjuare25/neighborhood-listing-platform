@@ -1,9 +1,9 @@
 import twilio from "twilio";
 
 export interface VoiceListing {
-  id: number;
+  id: string;
   address: string;
-  availability_status: string;
+  status: string;
 }
 
 export type ListingLookup = (
@@ -20,7 +20,7 @@ export async function resolveVoiceListing(
 
   const listing = await lookup(dialedNumber);
 
-  if (!listing || listing.availability_status !== "Active") {
+  if (!listing || listing.status !== "approved") {
     return null;
   }
 

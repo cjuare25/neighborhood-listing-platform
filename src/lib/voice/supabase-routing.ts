@@ -5,13 +5,13 @@ import { z } from "zod";
 import type { ListingLookup } from "./routing";
 
 const mappingSchema = z.object({
-  property_id: z.number().int().positive(),
+  property_id: z.string().uuid(),
 });
 
 const listingSchema = z.object({
-  id: z.number().int().positive(),
+  id: z.string().uuid(),
   address: z.string().trim().min(1),
-  availability_status: z.string(),
+  status: z.string(),
 });
 
 export function createSupabaseListingLookup(
@@ -42,7 +42,7 @@ export function createSupabaseListingLookup(
 
     const listing = await client
       .from("properties")
-      .select("id,address,availability_status")
+      .select("id,address,status")
       .eq("id", parsedMapping.data.property_id)
       .abortSignal(signal)
       .maybeSingle();
