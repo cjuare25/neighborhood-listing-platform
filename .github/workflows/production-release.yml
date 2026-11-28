@@ -172,3 +172,90 @@ jobs:
       - name: Gate 8 - Roll back failed production release
         if: failure() && steps.smoke.outcome == 'failure'
         run: npm run rollback:production
+
+
+  apply-voice-number-mapping:
+    name: Apply reviewed voice number mapping
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/lab/voice-failure-matrix'
+    needs:
+      - application-quality
+      - database-security
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+      SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Verify pending migration and apply
+        run: |
+          node <<'NODE'
+          const { spawnSync } = require("node:child_process");
+
+          const project = process.env.SUPABASE_PROJECT_ID;
+          const password = process.env.SUPABASE_DB_PASSWORD;
+          const expectedProject = "namidyxwopiimpksfumj";
+
+          if (
+            project !== expectedProject ||
+            !password ||
+            new URL(process.env.SUPABASE_URL).hostname !==
+              `${expectedProject}.supabase.co`
+          ) {
+            console.error("Database target mismatch or missing configuration.");
+            process.exit(1);
+          }
+
+          const url = new URL(
+            "postgresql://aws-1-us-west-2.pooler.supabase.com:5432/postgres"
+          );
+          url.username = `postgres.${project}`;
+          url.password = password;
+          url.searchParams.set("sslmode", "require");
+
+          console.log(`::add-mask::${url.password}`);
+          console.log(`::add-mask::${url.href}`);
+
+          function run(flags) {
+            const result = spawnSync(
+              "./node_modules/.bin/supabase",
+              ["db", "push", "--db-url", url.href, ...flags],
+              { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }
+            );
+
+            const output = (result.stdout || "") + (result.stderr || "");
+            console.log(output);
+
+            if (result.error || result.status !== 0) {
+              console.error("Migration command failed.");
+              process.exit(1);
+            }
+
+            return output;
+          }
+
+          const preview = run(["--dry-run"]);
+          const pending = [...new Set(
+            preview.match(/\b\d{14}_[A-Za-z0-9_-]+\.sql\b/g) || []
+          )];
+          const allowed =
+            "20261128060000_create_voice_number_routes.sql";
+
+          if (pending.length !== 1 || pending[0] !== allowed) {
+            console.error(
+              "Stopped: pending migrations differ from the reviewed migration."
+            );
+            process.exit(1);
+          }
+
+          console.log("Applying the reviewed voice number mapping migration.");
+          run(["--yes"]);
+          NODE
