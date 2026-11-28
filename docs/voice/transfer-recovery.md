@@ -42,3 +42,12 @@ SMS follow-up, or integration with the Next.js Twilio webhook.
 The caller and configured transfer destination matched in the inspected
 configuration. Use a separate caller line for the next controlled test.
 No passwords, caller phone numbers, or credentials are included here.
+
+## SMS trial limitation
+
+The inspected Twilio SMS console permits predefined templates.
+Its API example uses To, From, and Body=sms_appointment_reminders.
+
+This appointment template does not provide the required
+agent-unavailable follow-up. Custom SMS recovery remains unimplemented
+and delivery remains unverified. No credentials are recorded here.
