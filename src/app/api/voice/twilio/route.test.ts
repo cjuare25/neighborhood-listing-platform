@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
   createClient: vi.fn(),
+  lookupListing: vi.fn(),
   insert: vi.fn(),
   select: vi.fn(),
 }));
@@ -10,6 +11,10 @@ const mocks = vi.hoisted(() => ({
 vi.mock("server-only", () => ({}));
 vi.mock("@supabase/supabase-js", () => ({
   createClient: mocks.createClient,
+}));
+
+vi.mock("../../../../lib/voice/supabase-routing", () => ({
+  createSupabaseListingLookup: () => mocks.lookupListing,
 }));
 
 import { POST } from "./route";
@@ -33,6 +38,7 @@ const receipts = new Map<string, string>();
 function signedRequest(fields: Record<string, string> = {}) {
   const params = {
     CallSid: CALL_SID,
+    To: "+15555550100",
     From: PHONE,
     SpeechResult: TRANSCRIPT,
     ...fields,
@@ -62,6 +68,12 @@ function signedRequest(fields: Record<string, string> = {}) {
 beforeEach(() => {
   receipts.clear();
   mocks.createClient.mockReset();
+  mocks.lookupListing.mockReset();
+  mocks.lookupListing.mockResolvedValue({
+    id: 1,
+    address: "125 Maple Street",
+    availability_status: "Active",
+  });
   mocks.insert.mockReset();
   mocks.select.mockReset();
 
@@ -230,6 +242,66 @@ describe("Twilio voice webhook", () => {
     const response = await POST(signedRequest());
 
     expect(response.status).toBe(503);
+    expect(mocks.createClient).not.toHaveBeenCalled();
+  });
+});
+
+describe("signed webhook listing routing", () => {
+  it("returns HTTP 200 and general agency TwiML for an unmapped number", async () => {
+    mocks.lookupListing.mockResolvedValue(null);
+
+    const response = await POST(signedRequest());
+    const xml = await response.text();
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get("content-type")).toContain("text/xml");
+    expect(xml).toContain(
+      "We could not find an active property for this number.",
+    );
+    expect(xml).toContain("<Hangup/>");
+    expect(xml).not.toContain("<Dial");
+    expect(xml).not.toContain("<Connect");
+    expect(receipts.get(CALL_SID)).toBe(xml);
+    expect(mocks.lookupListing).toHaveBeenCalledWith("+15555550100");
+  });
+
+  it("returns the general agency message for an inactive listing", async () => {
+    mocks.lookupListing.mockResolvedValue({
+      id: 1,
+      address: "125 Maple Street",
+      availability_status: "Sold",
+    });
+
+    const response = await POST(signedRequest());
+
+    expect(response.status).toBe(200);
+    expect(await response.text()).toContain(
+      "We could not find an active property for this number.",
+    );
+  });
+
+  it("returns a listing-specific greeting for an active mapping", async () => {
+    const response = await POST(signedRequest());
+
+    expect(response.status).toBe(200);
+    expect(await response.text()).toContain("125 Maple Street");
+  });
+
+  it("uses the service-unavailable fallback when routing storage fails", async () => {
+    mocks.lookupListing.mockRejectedValue(new Error("Database unavailable"));
+
+    const response = await POST(signedRequest());
+
+    expect(response.status).toBe(200);
+    expect(await response.text()).toBe(FALLBACK);
+    expect(mocks.insert).not.toHaveBeenCalled();
+  });
+
+  it("rejects an invalid dialed number before accessing storage", async () => {
+    const response = await POST(signedRequest({ To: "invalid" }));
+
+    expect(response.status).toBe(400);
+    expect(await response.text()).toBe("Invalid dialed number");
     expect(mocks.createClient).not.toHaveBeenCalled();
   });
 });

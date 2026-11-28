@@ -3,6 +3,11 @@ import "server-only";
 import { createHash } from "node:crypto";
 import { createClient } from "@supabase/supabase-js";
 import twilio from "twilio";
+import {
+  buildUnmappedListingTwiml,
+  resolveVoiceListing,
+} from "../../../../lib/voice/routing";
+import { createSupabaseListingLookup } from "../../../../lib/voice/supabase-routing";
 
 export const runtime = "nodejs";
 
@@ -30,7 +35,7 @@ function xmlResponse(body: string) {
 }
 
 function logVoiceEvent(
-  event: "accepted" | "replayed" | "fallback",
+  event: "accepted" | "replayed" | "fallback" | "unmapped",
   callSid: string,
 ) {
   console.info(
@@ -128,6 +133,12 @@ export async function POST(request: Request) {
     return textResponse("Invalid CallSid", 400);
   }
 
+  const dialedNumber = params.To;
+
+  if (!dialedNumber || !/^\+[1-9]\d{7,14}$/.test(dialedNumber)) {
+    return textResponse("Invalid dialed number", 400);
+  }
+
   try {
     const supabaseUrl = process.env.SUPABASE_URL;
     const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -143,14 +154,26 @@ export async function POST(request: Request) {
       },
     });
 
-    const response = new twilio.twiml.VoiceResponse();
-    response.say(
-      "Thank you for calling Neighborhood Listing Platform. You can explore approved homes on our website. Goodbye.",
-    );
-    response.hangup();
-
-    const responseTwiml = response.toString();
     const deadline = AbortSignal.timeout(4000);
+    const listing = await resolveVoiceListing(
+      dialedNumber,
+      createSupabaseListingLookup(supabase, deadline),
+    );
+
+    let responseTwiml: string;
+
+    if (!listing) {
+      logVoiceEvent("unmapped", callSid);
+      responseTwiml = buildUnmappedListingTwiml();
+    } else {
+      const response = new twilio.twiml.VoiceResponse();
+      response.say(
+        `Thank you for calling Neighborhood Listing Platform about ${listing.address}. ` +
+          "Please visit our website for property information. Goodbye.",
+      );
+      response.hangup();
+      responseTwiml = response.toString();
+    }
 
     const { error: insertError } = await supabase
       .from("voice_webhook_receipts")
